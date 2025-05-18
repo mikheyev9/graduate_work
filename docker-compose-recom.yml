@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  fastapi_recom:
+    build:
+      context: ./fastapi_recom
+      dockerfile: Dockerfile
+    container_name: recom
+    ports:
+      - "8050:8050"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - theatre-db
+
+  redis:
+    image: redislabs/redismod:latest
+    container_name: redis
+    expose:
+      - "6379"
+    restart: always
+    volumes:
+      - redis_data:/data
+
+  theatre-db:
+    image: postgres:16
+    container_name: theatre-db
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+volumes:
+  postgres_data:
+  redis_data:
